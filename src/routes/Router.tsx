@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from "react-router"
+import { Navigate, RouterProvider, createBrowserRouter } from "react-router"
 import { Paths } from "./paths"
 import HomePage from "../pages/HomePage"
 import LoginPage from "../pages/LoginPage"
@@ -9,6 +9,11 @@ import GuestGuard from "../auth/GuestGuard"
 //הנתבים של האפליקציה שמגדירים את המסכים השונים וההגנות שלהם
 const Router = () => {
     const router = createBrowserRouter([
+        {
+            path: '/',
+            element: <Navigate to={Paths.login} />
+        },
+              
         {
             path: Paths.home,
             element: <AuthGuard><HomePage /></AuthGuard>
