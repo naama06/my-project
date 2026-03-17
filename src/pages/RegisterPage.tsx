@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode"
 import type { User } from "../types/user.types"
 import { useNavigate } from "react-router"
 import { Paths } from "../routes/paths"
+import { login } from "../services/auth.service"
 
 const RegisterPage = () => {
     const { setUser } = useAuthContext()
@@ -38,10 +39,11 @@ const RegisterPage = () => {
             if (profileImage) {
                 data.append('fileProfile', profileImage)
             }
-
-            const token = await register(data)
+            //יוצר את המשתמש בdb אבל לא מחזיר טוקן
+            await register(data)
+            const token = await login(formData.email, formData.password);
             const user = jwtDecode<User>(token)
-            setSession(token)
+            setSession(token)//שמירה ב LOCAL STORAGE
             setUser(user)
             navigate(Paths.home)
         } catch (error) {
