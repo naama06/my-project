@@ -1,6 +1,6 @@
-export type User ={
-    id: number;
+export type User = {
+    userId: string;
     userName: string;
-    userEmail: string;
-    isAdmin: boolean;
+    email: string;
+    role: "Admin" | "User";
 }

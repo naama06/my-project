@@ -5,6 +5,10 @@ import LoginPage from "../pages/LoginPage"
 import RegisterPage from "../pages/RegisterPage"
 import AuthGuard from "../auth/AuthGuard"
 import GuestGuard from "../auth/GuestGuard"
+import AdminGuard from "../auth/AdminGuard"
+import AdminLayout from "../pages/admin/AdminLayout"
+import ManageArtists from "../pages/admin/ManageArtists"
+import ManageSongs from "../pages/admin/ManageSongs"
 
 //הנתבים של האפליקציה שמגדירים את המסכים השונים וההגנות שלהם
 const Router = () => {
@@ -25,6 +29,14 @@ const Router = () => {
         {
             path: Paths.register,
             element: <GuestGuard><RegisterPage /></GuestGuard>
+        },
+        {
+            path: Paths.admin.root,
+            element: <AdminGuard><AdminLayout /></AdminGuard>,
+            children: [
+                { path: 'artists', element: <ManageArtists /> },
+                { path: 'songs', element: <ManageSongs /> },
+            ]
         },
         {
             path: '*',
