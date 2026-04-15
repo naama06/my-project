@@ -48,6 +48,28 @@ export const AuthProvider = ({ children }: Props) => {
         initialize()
     }, [])
 
+//     useEffect(() => {
+//     const initialize = () => {
+//         try {
+//             const token = getSession();
+//             if (token) {
+//                 const user = jwtDecode<User>(token);
+//                 // עדכון כל הסטייט בבת אחת כדי למנוע רינדורים מיותרים
+//                 setAuthState({
+//                     user: user,
+//                     isInitialized: true
+//                 });
+//                 return; // יוצאים מהפונקציה כי סיימנו
+//             }
+//         } catch (error) {
+//             console.error("Token decoding failed:", error);
+//         }
+        
+//         // אם אין טוקן או הייתה שגיאה
+//         setAuthState(prev => ({ ...prev, isInitialized: true }));
+//     };
+//     initialize();
+// }, []);
     return (
         <AuthContext.Provider value={{
             ...authState,

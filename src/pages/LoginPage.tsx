@@ -14,11 +14,11 @@ const LoginPage = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
-    })
+    }) 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
-    }
+    } 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -54,7 +54,7 @@ const LoginPage = () => {
                 />
                 <button type="submit">התחבר</button>
             </form>
-            <p>אין לך חשבון? <a href={`/${Paths.register}`}>הירשם</a></p>
+            <p>אין לך חשבון? <a href={`${Paths.register}`}>הירשם</a></p>
         </div>
     )
 }
