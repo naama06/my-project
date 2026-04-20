@@ -7,5 +7,6 @@ export const Paths = {
         root: '/admin',
         artists: '/admin/artists',
         songs: '/admin/songs',
+        users: '/admin/users',
     }
 }

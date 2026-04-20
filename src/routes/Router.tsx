@@ -9,6 +9,7 @@ import AdminGuard from "../auth/AdminGuard"
 import AdminLayout from "../pages/admin/AdminLayout"
 import ManageArtists from "../pages/admin/ManageArtists"
 import ManageSongs from "../pages/admin/ManageSongs"
+import ManageUsers from "../pages/admin/ManageUsers"
 
 //הנתבים של האפליקציה שמגדירים את המסכים השונים וההגנות שלהם
 const Router = () => {
@@ -36,6 +37,7 @@ const Router = () => {
             children: [
                 { path: 'artists', element: <ManageArtists /> },
                 { path: 'songs', element: <ManageSongs /> },
+                { path: 'users', element: <ManageUsers /> },
             ]
         },
         {
