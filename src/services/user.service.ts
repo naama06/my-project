@@ -16,8 +16,9 @@ export const getUserById = async (id: number): Promise<AdminUser> => {
     return response.data;
 }
 
-export const updateUser = async (id: number, data: FormData): Promise<void> => {
-    await axiosInstance.put(`User/${id}`, data);
+export const updateUser = async (id: number, data: FormData): Promise<{ token: string }> => {
+    const response = await axiosInstance.put(`User/${id}`, data);
+    return response.data;
 }
 
 
