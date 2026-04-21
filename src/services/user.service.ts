@@ -11,6 +11,16 @@ export const deleteUser = async (id: number): Promise<void> => {
     await axiosInstance.delete(`User/${id}`);
 }
 
+export const getUserById = async (id: number): Promise<AdminUser> => {
+    const response = await axiosInstance.get(`User/${id}`);
+    return response.data;
+}
+
+export const updateUser = async (id: number, data: FormData): Promise<void> => {
+    await axiosInstance.put(`User/${id}`, data);
+}
+
+
 // אם תרצי בהמשך לשנות הרשאות מנהל דרך הטבלה
 export const toggleAdminStatus = async (id: number, isAdmin: boolean): Promise<void> => {
     await axiosInstance.patch(`User/${id}/toggle-admin`, { isAdmin });

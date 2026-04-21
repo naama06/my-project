@@ -10,7 +10,7 @@ import AdminLayout from "../pages/admin/AdminLayout"
 import ManageArtists from "../pages/admin/ManageArtists"
 import ManageSongs from "../pages/admin/ManageSongs"
 import ManageUsers from "../pages/admin/ManageUsers"
-
+import ProfilePage from "../pages/ProfilePage"    
 //הנתבים של האפליקציה שמגדירים את המסכים השונים וההגנות שלהם
 const Router = () => {
     const router = createBrowserRouter([
@@ -30,6 +30,10 @@ const Router = () => {
         {
             path: Paths.register,
             element: <GuestGuard><RegisterPage /></GuestGuard>
+        },
+        {
+            path: Paths.profile,
+            element: <AuthGuard><ProfilePage /></AuthGuard>
         },
         {
             path: Paths.admin.root,

@@ -3,6 +3,7 @@ export const Paths = {
     home: '/home',
     login: '/login',
     register: '/register',
+    profile: '/profile',
     admin: {
         root: '/admin',
         artists: '/admin/artists',
