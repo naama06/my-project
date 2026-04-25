@@ -1,16 +1,19 @@
 import { createContext, useState, useEffect, type ReactNode } from "react"
-import type { User } from "../types/user.types"
-import { getSession, setSession } from "./auth.utils"
+import type { User, AdminUser } from "../types/user.types" // הוספתי AdminUser
+import { getSession, removeSession } from "./auth.utils"
 import { jwtDecode } from "jwt-decode"
-//הקשר של האותנטיקציה שמכיל את המידע על המשתמש הנוכחי והאם הוא מחובר או לא
+import { getUserById } from "../services/user.service"
+
 type AuthStateType = {
     user: User | null
     isInitialized: boolean
 }
-//ההבדל מהמורה: אצל המורה היה קריאה לשרת getUserByToken — אצלנו אנחנו מפענחים את ה-token ישירות עם jwtDecode כי כל המידע כבר בתוכו!
+
+// 1. עדכון ה-Type של ה-Context - הוספנו את fetchUser
 type AuthContextType = AuthStateType & {
     isAuthorized: boolean
     setUser: (user: User) => void
+    fetchUser: () => Promise<void> // הגדרת הפונקציה החדשה
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null)
@@ -19,7 +22,6 @@ type Props = {
     children: ReactNode
 }
 
-//הפרוביידר של האותנטיקציה שמקיף את כל האפליקציה ומספק את המידע על המשתמש הנוכחי לכל הקומפוננטות
 export const AuthProvider = ({ children }: Props) => {
     const [authState, setAuthState] = useState<AuthStateType>({
         user: null,
@@ -30,54 +32,45 @@ export const AuthProvider = ({ children }: Props) => {
         setAuthState(prev => ({ ...prev, user }))
     }
 
-    useEffect(() => {
-        const initialize = () => {
+    const fetchUser = async () => {
+        const token = getSession();
+        if (token) {
             try {
-                const token = getSession()
-                if (token) {
-                    const user = jwtDecode<User>(token)
-                    setSession(token)
-                    setUser(user)
-                }
+                const decoded: any = jwtDecode(token);
+                const userId = decoded.userId;
+
+                const freshUserData: AdminUser = await getUserById(Number(userId));
+                
+                // 2. המרה מ-AdminUser ל-User (כדי ש-setUser לא יצעק)
+                // אנחנו "מנרמלים" את הנתונים למה שהאפליקציה מצפה ב-State הגלובלי
+                const userToSet: User = {
+                    userId: freshUserData.id.toString(), // ודאי שזה תואם ל-ID ב-User type שלך
+                    userName: freshUserData.userName,
+                    email: freshUserData.email,
+                    role: freshUserData.isAdmin ? "Admin" : "User"
+                };
+
+                setUser(userToSet);
             } catch (error) {
-                console.error(error)
-            } finally {
-                setAuthState(prev => ({ ...prev, isInitialized: true }))
+                console.error("Failed to fetch fresh user data", error);
+                removeSession(); 
             }
         }
-        initialize()
-    }, [])
+        setAuthState(prev => ({ ...prev, isInitialized: true }));
+    };
 
-//     useEffect(() => {
-//     const initialize = () => {
-//         try {
-//             const token = getSession();
-//             if (token) {
-//                 const user = jwtDecode<User>(token);
-//                 // עדכון כל הסטייט בבת אחת כדי למנוע רינדורים מיותרים
-//                 setAuthState({
-//                     user: user,
-//                     isInitialized: true
-//                 });
-//                 return; // יוצאים מהפונקציה כי סיימנו
-//             }
-//         } catch (error) {
-//             console.error("Token decoding failed:", error);
-//         }
-        
-//         // אם אין טוקן או הייתה שגיאה
-//         setAuthState(prev => ({ ...prev, isInitialized: true }));
-//     };
-//     initialize();
-// }, []);
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
     return (
         <AuthContext.Provider value={{
             ...authState,
             setUser,
+            fetchUser, // עכשיו TypeScript יקבל את זה
             isAuthorized: !!authState.user
         }}>
             {children}
         </AuthContext.Provider>
     )
 }
-//ההבדל מהמורה: אצל המורה היה קריאה לשרת getUserByToken — אצלנו אנחנו מפענחים את ה-token ישירות עם jwtDecode כי כל המידע כבר בתוכו!ההבדל מהמורה: אצל המורה היה קריאה לשרת getUserByToken — אצלנו אנחנו מפענחים את ה-token ישירות עם jwtDecode כי כל המידע כבר בתוכו!

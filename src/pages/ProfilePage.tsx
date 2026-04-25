@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../auth/useAuthContext";
 import { getUserById, updateUser } from "../services/user.service";
-import { removeSession,setSession, } from "../auth/auth.utils";
+import { removeSession } from "../auth/auth.utils";
 import type { AdminUser } from "../types/user.types";
-import { useNavigate } from "react-router-dom"; // הוספנו את ה-Hook לניווט
-import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
-    const { user, setUser } = useAuthContext(); 
-    const navigate = useNavigate(); // אתחול הניווט
+    // שלפנו את fetchUser ישירות מה-Context
+    const { user, fetchUser } = useAuthContext(); 
+    const navigate = useNavigate();
     const [userData, setUserData] = useState<AdminUser | null>(null);
     const [newPassword, setNewPassword] = useState("");
     const [profileImage, setProfileImage] = useState<File | null>(null);
@@ -42,36 +42,31 @@ const ProfilePage = () => {
         }
     };
 
-const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!userData) return;
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!userData) return;
 
-    try {
-        const data = new FormData();
-        data.append('userName', userData.userName);
-        data.append('email', userData.email);
-        if (newPassword.trim() !== "") data.append('password', newPassword);
-        if (profileImage) data.append('fileProfile', profileImage);
+        try {
+            const data = new FormData();
+            data.append('userName', userData.userName);
+            data.append('email', userData.email);
+            if (newPassword.trim() !== "") data.append('password', newPassword);
+            if (profileImage) data.append('fileProfile', profileImage);
 
-        // 1. עדכון בשרת וקבלת התגובה שמכילה את הטוקן החדש
-        const result = await updateUser(userData.id, data); 
-        const newToken = result.token; // השרת מחזיר { token: "..." }
+            // 1. עדכון בשרת (עכשיו הוא מחזיר רק OK בלי טוקן)
+            await updateUser(userData.id, data); 
 
-        // 2. עדכון ה-LocalStorage - זה הצעד הקריטי בשביל F5!
-        setSession(newToken);
+            // 2. קריאה לפונקציה מה-Context שמושכת נתונים טריים מהשרת ומעדכנת את ה-State הגלובלי
+            await fetchUser(); 
 
-        // 3. עדכון ה-State של ה-Context (לעדכון מיידי של ה-UI)
-        const decodedUser = jwtDecode<any>(newToken);
-        setUser(decodedUser);
-
-        alert('הפרופיל עודכן בהצלחה!');
-        navigate("/"); // חזרה לדף הבית - עכשיו הכל יהיה מעודכן
-        
-    } catch (error) {
-        console.error(error);
-        alert('עדכון הפרופיל נכשל');
-    }
-};
+            alert('הפרופיל עודכן בהצלחה!');
+            navigate("/"); 
+            
+        } catch (error) {
+            console.error(error);
+            alert('עדכון הפרופיל נכשל');
+        }
+    };
 
     if (loading) return <div>טוען נתונים...</div>;
 

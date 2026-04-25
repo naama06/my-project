@@ -7,6 +7,7 @@ export const getAllUsers = async (): Promise<AdminUser[]> => {
     return response.data;
 }
 
+
 export const deleteUser = async (id: number): Promise<void> => {
     await axiosInstance.delete(`User/${id}`);
 }
