@@ -4,15 +4,19 @@ import { getUserById, updateUser } from "../services/user.service";
 import { removeSession } from "../auth/auth.utils";
 import type { AdminUser } from "../types/user.types";
 import { useNavigate } from "react-router-dom";
+import { Sparkles, Mail, User, ChevronDown, ChevronUp } from 'lucide-react';
+import '../style/ProfilePage.css';
 
 const ProfilePage = () => {
-    // שלפנו את fetchUser ישירות מה-Context
     const { user, fetchUser } = useAuthContext(); 
     const navigate = useNavigate();
     const [userData, setUserData] = useState<AdminUser | null>(null);
     const [newPassword, setNewPassword] = useState("");
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [loading, setLoading] = useState(true);
+    
+    // State חדש לניהול הצגת הטופס
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -42,112 +46,140 @@ const ProfilePage = () => {
         }
     };
 
-const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!userData) return;
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!userData) return;
 
-    try {
-        const data = new FormData();
-        // וודאי שהשמות כאן תואמים בדיוק ל-DTO ב-C# (UserName, Email, Password, FileProfile)
-        data.append('UserName', userData.userName); 
-        data.append('Email', userData.email);
-        
-        if (newPassword.trim() !== "") {
-            data.append('Password', newPassword);
+        try {
+            const data = new FormData();
+            data.append('UserName', userData.userName); 
+            data.append('Email', userData.email);
+            
+            if (newPassword.trim() !== "") {
+                data.append('Password', newPassword);
+            }
+            
+            if (profileImage) {
+                data.append('FileProfile', profileImage);
+            }
+
+            await updateUser(userData.id, data); 
+
+            await fetchUser(); 
+            alert('הפרופיל עודכן בהצלחה!');
+            setIsEditing(false); // סגירת הטופס לאחר עדכון
+            navigate("/"); 
+        } catch (error) {
+            console.error("Update failed:", error);
+            alert('עדכון הפרופיל נכשל');
         }
-        
-        if (profileImage) {
-            data.append('FileProfile', profileImage);
-        }
+    };
 
-        // שימוש ב-id מהאובייקט שנטען
-        await updateUser(userData.id, data); 
-
-        await fetchUser(); 
-        alert('הפרופיל עודכן בהצלחה!');
-        navigate("/"); 
-    } catch (error) {
-        console.error("Update failed:", error);
-        alert('עדכון הפרופיל נכשל');
-    }
-};
-
-    if (loading) return <div>טוען נתונים...</div>;
+    if (loading) return <div className="loading-container">טוען נתונים...</div>;
 
     return (
-        <div style={{ maxWidth: '400px', margin: '0 auto', textAlign: 'center', padding: '20px' }}>
-            <h1>פרופיל אישי</h1>
+        <div className="new-profile-layout">
+            
+            {/* Header Section */}
+            <div className="profile-hero">
+                <div className="avatar-halo-container large">
+                    {userData?.arrProfile ? (
+                        <img 
+                            src={`data:image/jpeg;base64,${userData.arrProfile}`} 
+                            alt="Profile" 
+                            className="main-profile-avatar large-avatar" 
+                        />
+                    ) : (
+                        <div className="main-profile-placeholder large-avatar">
+                            {userData?.userName?.charAt(0).toUpperCase() || 'N'}
+                        </div>
+                    )}
+                </div>
+                
+                <div className="user-text-info">
+                   <h1 className="gradient-username">@{userData?.userName || 'naama'}</h1>
+                   <p className="sub-email">{userData?.email || 'naamawe06@gmail.com'}</p>
+                </div>
 
-            <div style={{ marginBottom: '20px' }}>
-                {userData?.arrProfile ? (
-                    <img 
-                        src={`data:image/jpeg;base64,${userData.arrProfile}`} 
-                        alt="Profile" 
-                        style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #ddd' }} 
-                    />
-                ) : (
-                    <div style={{ width: '150px', height: '150px', borderRadius: '50%', backgroundColor: '#ccc', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        אין תמונה
-                    </div>
-                )}
+                {/* כפתור ערוך פרופיל - שולט על הצגת הטופס */}
+                <button 
+                    className={`gradient-edit-btn ${isEditing ? 'active' : ''}`}
+                    onClick={() => setIsEditing(!isEditing)}
+                >
+                   {isEditing ? <ChevronUp size={18} /> : <Sparkles size={18} />} 
+                   {isEditing ? 'סגור עריכה' : 'ערוך פרופיל'}
+                </button>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <div style={{ textAlign: 'right' }}>
-                    <label>שם משתמש:</label>
-                    <input
-                        type="text"
-                        name="userName"
-                        style={{ width: '100%', padding: '8px' }}
-                        value={userData?.userName || ''}
-                        onChange={handleChange}
-                    />
-                </div>
+            {/* Form Section - מותנה ב-isEditing */}
+            {isEditing && (
+                <div className="profile-form-section animate-fade-in">
+                    <form onSubmit={handleSubmit} className="new-form-grid">
+                        
+                        <div className="form-input-group">
+                            <div className="input-header">
+                                <User size={18} /> שם משתמש
+                            </div>
+                            <input
+                                type="text"
+                                name="userName"
+                                value={userData?.userName || ''}
+                                onChange={handleChange}
+                                placeholder="הכנס שם משתמש..."
+                            />
+                        </div>
 
-                <div style={{ textAlign: 'right' }}>
-                    <label>אימייל:</label>
-                    <input
-                        type="email"
-                        name="email"
-                        style={{ width: '100%', padding: '8px' }}
-                        value={userData?.email || ''}
-                        onChange={handleChange}
-                    />
-                </div>
+                        <div className="form-input-group">
+                            <div className="input-header">
+                                <Mail size={18} /> אימייל
+                            </div>
+                            <input
+                                type="email"
+                                name="email"
+                                value={userData?.email || ''}
+                                onChange={handleChange}
+                                placeholder="תקן אימייל..."
+                            />
+                        </div>
 
-                <div style={{ textAlign: 'right' }}>
-                    <label>סיסמה חדשה (השאר ריק אם אין שינוי):</label>
-                    <input
-                        type="password"
-                        style={{ width: '100%', padding: '8px' }}
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                </div>
+                        <div className="form-input-group">
+                            <div className="input-header">
+                                סיסמה חדשה
+                            </div>
+                            <input
+                                type="password"
+                                placeholder="השאר ריק אם אין שינוי..."
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                        </div>
 
-                <div style={{ textAlign: 'right' }}>
-                    <label>החלף תמונת פרופיל:</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        style={{ width: '100%' }}
-                        onChange={handleImageChange}
-                    />
-                </div>
+                        <label className="upload-btn-new">
+                            החלף תמונה
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                style={{display: 'none'}}
+                            />
+                        </label>
 
-                <button type="submit" style={{ marginTop: '10px', padding: '12px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                    שמור שינויים
+                        <button type="submit" className="save-changes-btn">
+                            שמור שינויים
+                        </button>
+                    </form>
+                </div>
+            )}
+
+            <div className="footer-actions">
+                {!isEditing && <div className="form-divider-new"></div>}
+                <button 
+                    className="full-logout-btn" 
+                    onClick={() => { removeSession(); window.location.reload(); }} 
+                >
+                    התנתק מהמערכת
                 </button>
-            </form>
-
-            <hr style={{ margin: '30px 0' }} />
-
-            <button 
-                onClick={() => { removeSession(); window.location.reload(); }} 
-                style={{ backgroundColor: '#ff4444', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '4px', cursor: 'pointer', width: '100%' }}
-            >
-                התנתק מהמערכת
-            </button>
+            </div>
         </div>
     );
 };

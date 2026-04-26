@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // הוספת ייבוא לניווט
+import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../auth/useAuthContext";
-import { removeSession } from "../auth/auth.utils";
 import { getRecommendedSongs, getFavoriteArtists } from "../services/song.service";
 import type { Song } from "../types/song.types";
+import { TrendingUp, Sparkles, Flame } from 'lucide-react';
+import "../style/HomePage.css"; 
 
 const HomePage = () => {
     const { user } = useAuthContext();
-    const navigate = useNavigate(); // אתחול הניווט
+    const navigate = useNavigate();
     const [recommendedSongs, setRecommendedSongs] = useState<Song[]>([]);
     const [favoriteArtists, setFavoriteArtists] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -17,18 +18,23 @@ const HomePage = () => {
         return `data:image/jpeg;base64,${arrImage}`;
     };
 
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'בוקר טוב';
+        if (hour < 18) return 'צהריים טובים';
+        return 'ערב טוב';
+    };
+
     useEffect(() => {
         const fetchHomeData = async () => {
             if (user?.userId) {
                 try {
                     setLoading(true);
                     const userIdNum = Number(user.userId);
-                    
                     const [songs, artists] = await Promise.all([
                         getRecommendedSongs(userIdNum),
                         getFavoriteArtists(userIdNum)
                     ]);
-
                     setRecommendedSongs(songs);
                     setFavoriteArtists(artists);
                 } catch (error) {
@@ -38,65 +44,77 @@ const HomePage = () => {
                 }
             }
         };
-
         fetchHomeData();
     }, [user?.userId]);
 
-    // פונקציה שעוברת לעמוד השיר
     const handleSongClick = (id: number) => {
-        navigate(`/now-playing/${id}`); // מנווט לנתיב של השיר
+        navigate(`/now-playing/${id}`);
     };
 
     return (
-        <div style={{ padding: '20px', direction: 'rtl', backgroundColor: '#121212', color: 'white', minHeight: '100vh' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h1>שלום {user?.userName}!</h1>
-                <button 
-                    onClick={removeSession}
-                    style={{ backgroundColor: '#1db954', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer' }}
-                >
-                    התנתק
-                </button>
+        <div id="home-page-container">
+            {/* Header Section - ללא כפתור התנתקות */}
+            <header className="home-header">
+                <h1 className="greeting-text">{getGreeting()}, {user?.userName}!</h1>
+                <p className="subtitle-text">מוכנה להיכנס לקצב עם האמנים האהובים עליך?</p>
             </header>
 
-            <hr style={{ borderColor: '#333', margin: '20px 0' }} />
+            {/* Featured Banner */}
+            <div className="featured-banner">
+                <img
+                    src="https://images.unsplash.com/photo-1762788109986-8dcd959eeccb?q=80&w=1080"
+                    alt="Featured"
+                    className="banner-img"
+                />
+                <div className="banner-overlay" />
+                <div className="banner-content">
+                    <div className="trending-badge">
+                        <Flame size={20} className="text-primary" />
+                        <span>Trending Now</span>
+                    </div>
+                    <h2 className="banner-title">Summer Vibes 2026</h2>
+                    <p className="banner-description">הטרקים הכי חמים ששורפים את הפלייליסט שלך עכשיו</p>
+                    
+                </div>
+            </div>
 
             {loading ? (
-                <p>טוען המלצות עבורך...</p>
+                <div className="loading-state">טוען המלצות עבורך...</div>
             ) : (
                 <>
-                    <section>
-                        <h2>שירים שמומלץ לך לשמוע</h2>
-                        <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '10px' }}>
+                    <section className="home-section">
+                        <div className="section-title-wrapper">
+                            <Sparkles className="icon-primary" />
+                            <h2>המלצות במיוחד עבורך</h2>
+                        </div>
+                        <p className="section-subtitle">מבוסס על האמנים שאת אוהבת</p>
+                        <div className="cards-grid">
                             {recommendedSongs.map(song => (
-                                <div 
-                                    key={song.id} 
-                                    style={cardStyle} 
-                                    onClick={() => handleSongClick(song.id)} // לחיצה מפעילה ניווט
-                                >
-                                    <img 
-                                        src={getImageSrc(song.arrImage)} 
-                                        alt={song.songName}
-                                        style={songImageStyle}
-                                    />
-                                    <p style={{ margin: '10px 0 5px' }}><strong>{song.songName}</strong></p>
-                                    <small style={{ color: '#b3b3b3' }}>{song.artistName} • {song.genere}</small>
+                                <div key={song.id} className="song-card-figma" onClick={() => handleSongClick(song.id)}>
+                                    <div className="image-wrapper">
+                                        <img src={getImageSrc(song.arrImage)} alt={song.songName} />
+                                    </div>
+                                    <div className="card-info">
+                                        <h4 className="song-name">{song.songName}</h4>
+                                        <p className="artist-name">{song.artistName} • {song.genere}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </section>
 
-                    <section style={{ marginTop: '40px' }}>
-                        <h2>אמנים שאת עשויה לאהוב</h2>
-                        <div style={{ display: 'flex', gap: '25px', overflowX: 'auto', paddingBottom: '10px' }}>
+                    <section className="home-section">
+                        <div className="section-title-wrapper">
+                            <TrendingUp className="icon-primary" />
+                            <h2>אמנים שאת עשויה לאהוב</h2>
+                        </div>
+                        <div className="artists-grid">
                             {favoriteArtists.map(artist => (
-                                <div key={artist.id} style={{ textAlign: 'center', minWidth: '120px' }}>
-                                    <img 
-                                        src={getImageSrc(artist.arrImage)} 
-                                        alt={artist.artistName}
-                                        style={artistImageStyle}
-                                    />
-                                    <p style={{ marginTop: '10px' }}>{artist.artistName}</p>
+                                <div key={artist.id} className="artist-card-figma">
+                                    <div className="artist-image-wrapper">
+                                        <img src={getImageSrc(artist.arrImage)} alt={artist.artistName} />
+                                    </div>
+                                    <p className="artist-label">{artist.artistName}</p>
                                 </div>
                             ))}
                         </div>
@@ -105,33 +123,6 @@ const HomePage = () => {
             )}
         </div>
     );
-};
-
-// אובייקטי עיצוב (הוספתי cursor: pointer לכרטיס)
-const cardStyle: React.CSSProperties = {
-    backgroundColor: '#181818',
-    padding: '15px',
-    borderRadius: '8px',
-    minWidth: '160px',
-    textAlign: 'center',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-    cursor: 'pointer', 
-    transition: 'transform 0.2s'
-};
-
-const songImageStyle: React.CSSProperties = {
-    width: '130px',
-    height: '130px',
-    objectFit: 'cover',
-    borderRadius: '4px'
-};
-
-const artistImageStyle: React.CSSProperties = {
-    width: '100px',
-    height: '100px',
-    borderRadius: '50%',
-    objectFit: 'cover',
-    border: '2px solid #333'
 };
 
 export default HomePage;
