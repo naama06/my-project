@@ -32,3 +32,8 @@ export const getFavoriteArtists = async (userId: number): Promise<any[]> => {
     const response = await axiosInstance.get(`Song/favorite-artists/${userId}`);
     return response.data;
 };
+
+export const getSongsByGenre = async (genreId: number): Promise<Song[]> => {
+    const response = await axiosInstance.get(`Song/genre/${genreId}`)
+    return response.data
+}

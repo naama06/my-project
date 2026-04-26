@@ -4,7 +4,7 @@ import { getUserById, updateUser } from "../services/user.service";
 import { removeSession } from "../auth/auth.utils";
 import type { AdminUser } from "../types/user.types";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Mail, User, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sparkles, Mail, User,  ChevronUp } from 'lucide-react';
 import '../style/ProfilePage.css';
 
 const ProfilePage = () => {

@@ -1,19 +1,36 @@
+/* Container & Layout */
 .search-page-container {
     padding: 40px 60px;
     background-color: #000;
     min-height: 100vh;
     direction: rtl;
-    margin-right: 260px; /* תואם לסיידבר שלך */
+    margin-right: 260px;
     font-family: 'Inter', sans-serif;
+    color: white;
 }
 
+/* Header & Breadcrumb */
 .search-header h1 {
     font-size: 2.5rem;
     font-weight: 800;
     margin-bottom: 24px;
 }
 
-/* שורת חיפוש */
+.genre-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    color: #b3b3b3;
+    font-size: 0.9rem;
+}
+
+.genre-breadcrumb strong {
+    color: #00CEEA;
+    font-size: 1.1rem;
+}
+
+/* Search Bar */
 .search-bar-wrapper {
     position: relative;
     max-width: 600px;
@@ -26,6 +43,7 @@
     top: 50%;
     transform: translateY(-50%);
     color: #888;
+    pointer-events: none;
 }
 
 .search-input-field {
@@ -33,7 +51,7 @@
     background: #1a1a1a;
     border: 1px solid transparent;
     padding: 16px 55px 16px 45px;
-    border-radius: 100px; /* שורת חיפוש עגולה כמו בפיגמה */
+    border-radius: 100px;
     color: white;
     font-size: 1rem;
     outline: none;
@@ -43,6 +61,7 @@
 .search-input-field:focus {
     background: #252525;
     border-color: #00CEEA;
+    box-shadow: 0 0 15px rgba(0, 206, 234, 0.1);
 }
 
 .clear-search {
@@ -54,113 +73,116 @@
     border: none;
     color: #888;
     cursor: pointer;
-}
-
-/* טאבים לסינון */
-.filter-tabs {
     display: flex;
-    gap: 12px;
-    margin-bottom: 40px;
+    align-items: center;
+    padding: 5px;
 }
 
-.filter-tabs button {
-    padding: 8px 24px;
-    border-radius: 100px;
-    border: none;
-    background: #1a1a1a;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.filter-tabs button.active {
-    background: #00CEEA;
-    color: black;
-}
-
-/* תצוגת ג'אנרים (Browse All) */
+/* Genres Grid */
 .genres-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 24px;
     margin-top: 20px;
 }
 
 .genre-card {
     position: relative;
-    height: 140px;
+    height: 160px; /* קצת יותר גובה למראה יוקרתי */
     border-radius: 16px;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.3s;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.genre-card:hover { transform: scale(1.03); }
+.genre-card:hover { 
+    transform: translateY(-5px); 
+}
 
 .genre-card img {
     position: absolute;
-    width: 80px;
-    height: 80px;
-    bottom: -10px;
-    left: -10px;
+    width: 100px;
+    height: 100px;
+    bottom: -15px;
+    left: -15px;
     transform: rotate(25deg);
     object-fit: cover;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
 .genre-card h3 {
     padding: 20px;
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* צבעי ג'אנרים */
-.genre-pink { background: linear-gradient(135deg, #ec4899, #a855f7); }
-.genre-red { background: linear-gradient(135deg, #ef4444, #f97316); }
-.genre-orange { background: linear-gradient(135deg, #f59e0b, #f97316); }
-.genre-blue { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
+/* Genre Colors (Linear Gradients) */
+.genre-pink { background: linear-gradient(135deg, #ec4899, #831843); }
+.genre-red { background: linear-gradient(135deg, #ef4444, #7f1d1d); }
+.genre-green { background: linear-gradient(135deg, #10b981, #064e3b); } /* Folk */
+.genre-orange { background: linear-gradient(135deg, #f59e0b, #78350f); } /* Country */
+.genre-blue { background: linear-gradient(135deg, #0ea5e9, #1e3a8a); } /* Jewish */
 
-/* תוצאות חיפוש - רשימת שירים */
-.results-section { margin-bottom: 40px; }
-.section-title { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: #00CEEA; }
+/* Results Content Animation */
+.results-wrapper {
+    animation: fadeIn 0.4s ease-out;
+}
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Song List Items */
 .song-result-item {
     display: flex;
     align-items: center;
     gap: 15px;
-    padding: 10px;
-    border-radius: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
     transition: background 0.2s;
     cursor: pointer;
 }
 
-.song-result-item:hover { background: rgba(255,255,255,0.05); }
-
-.song-result-item img { width: 50px; height: 50px; border-radius: 6px; }
-.song-info .title { font-weight: 600; }
-.song-info .artist { color: #888; font-size: 0.9rem; }
-
-/* גריד אמנים */
-.artists-grid-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
+.song-result-item:hover { 
+    background: rgba(255, 255, 255, 0.1); 
 }
 
-.artist-result-card {
-    background: #121212;
-    padding: 20px;
-    border-radius: 16px;
-    text-align: center;
-    transition: background 0.3s;
-}
-
-.artist-result-card:hover { background: #1a1a1a; }
-
-.artist-result-card img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin-bottom: 12px;
+.song-result-item img { 
+    width: 55px; 
+    height: 55px; 
+    border-radius: 4px; 
     object-fit: cover;
+}
+
+.song-info .title { 
+    font-weight: 600; 
+    font-size: 1.05rem; 
+    margin-bottom: 4px;
+}
+
+.song-info .artist { 
+    color: #b3b3b3; 
+    font-size: 0.9rem; 
+}
+.breadcrumb-link {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+    color: #ffffff; /* הופך ללבן בהיר יותר כשעומדים עליו */
+    text-decoration: underline; /* אופציונלי, למראה של קישור */
+}
+
+.genre-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    color: #b3b3b3;
+    font-size: 0.9rem;
+    user-select: none; /* מונע בחירת טקסט בטעות בלחיצה מהירה */
 }
