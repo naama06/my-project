@@ -42,31 +42,35 @@ const ProfilePage = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!userData) return;
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userData) return;
 
-        try {
-            const data = new FormData();
-            data.append('userName', userData.userName);
-            data.append('email', userData.email);
-            if (newPassword.trim() !== "") data.append('password', newPassword);
-            if (profileImage) data.append('fileProfile', profileImage);
-
-            // 1. עדכון בשרת (עכשיו הוא מחזיר רק OK בלי טוקן)
-            await updateUser(userData.id, data); 
-
-            // 2. קריאה לפונקציה מה-Context שמושכת נתונים טריים מהשרת ומעדכנת את ה-State הגלובלי
-            await fetchUser(); 
-
-            alert('הפרופיל עודכן בהצלחה!');
-            navigate("/"); 
-            
-        } catch (error) {
-            console.error(error);
-            alert('עדכון הפרופיל נכשל');
+    try {
+        const data = new FormData();
+        // וודאי שהשמות כאן תואמים בדיוק ל-DTO ב-C# (UserName, Email, Password, FileProfile)
+        data.append('UserName', userData.userName); 
+        data.append('Email', userData.email);
+        
+        if (newPassword.trim() !== "") {
+            data.append('Password', newPassword);
         }
-    };
+        
+        if (profileImage) {
+            data.append('FileProfile', profileImage);
+        }
+
+        // שימוש ב-id מהאובייקט שנטען
+        await updateUser(userData.id, data); 
+
+        await fetchUser(); 
+        alert('הפרופיל עודכן בהצלחה!');
+        navigate("/"); 
+    } catch (error) {
+        console.error("Update failed:", error);
+        alert('עדכון הפרופיל נכשל');
+    }
+};
 
     if (loading) return <div>טוען נתונים...</div>;
 

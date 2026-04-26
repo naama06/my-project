@@ -12,6 +12,7 @@ import ManageSongs from "../pages/admin/ManageSongs"
 import ManageUsers from "../pages/admin/ManageUsers"
 import ProfilePage from "../pages/ProfilePage"    
 import NowPlaying from "../pages/NowPlaying"
+import SearchPage from "../pages/Search"
 //הנתבים של האפליקציה שמגדירים את המסכים השונים וההגנות שלהם
 const Router = () => {
     const router = createBrowserRouter([
@@ -39,6 +40,10 @@ const Router = () => {
         {
             path: Paths.nowPlaying + '/:id',
             element: <AuthGuard><NowPlaying /></AuthGuard>
+        },
+        {
+            path: Paths.search,
+            element: <AuthGuard><SearchPage /></AuthGuard>
         },
         {
             path: Paths.admin.root,
