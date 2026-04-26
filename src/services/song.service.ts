@@ -17,3 +17,18 @@ export const updateSong = async (id: number, formData: FormData): Promise<void> 
 export const deleteSong = async (id: number): Promise<void> => {
     await axiosInstance.delete(`Song/${id}`)
 }
+
+export const getSongById = async (id: number): Promise<any> => {
+    const response = await axiosInstance.get(`Song/${id}`);
+    return response.data;
+};
+
+export const getRecommendedSongs = async (userId: number): Promise<Song[]> => {
+    const response = await axiosInstance.get(`Song/recommended/${userId}`);
+    return response.data;
+};
+
+export const getFavoriteArtists = async (userId: number): Promise<any[]> => {
+    const response = await axiosInstance.get(`Song/favorite-artists/${userId}`);
+    return response.data;
+};
