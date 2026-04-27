@@ -51,9 +51,7 @@ export const Sidebar = () => {
           <span>דף הבית</span>
         </div>
         
-        <div 
-    className={`nav-item ${isActive(Paths.search) ? 'active' : ''}`} 
-    onClick={() => navigate(Paths.search)}
+        <div className={`nav-item ${isActive(Paths.search) ? 'active' : ''}`} onClick={() => navigate(Paths.search)}
 >
     <Search size={20} /> {/* וודאי שיש לך כאן את האייקון המתאים */}
     <span>חיפוש</span>
@@ -66,10 +64,13 @@ export const Sidebar = () => {
 
         <div className="nav-separator"></div>
 
-        <div className="nav-item">
-          <PlusSquare size={22} />
-          <span>יצירת פלייליסט</span>
-        </div>
+        <div 
+  className={`nav-item ${isActive(Paths.createPlaylist) ? 'active' : ''}`} 
+  onClick={() => navigate(Paths.createPlaylist)}
+>
+  <PlusSquare size={22} />
+  <span>צור פלייליסט</span>
+</div>
         
         <div 
           className={`nav-item ${isActive(Paths.profile) ? 'active' : ''}`} 

@@ -6,6 +6,7 @@ export const Paths = {
     profile: '/profile',
     nowPlaying: '/now-playing',
     search: '/search',
+    createPlaylist: '/create-playlist',
     admin: {
         root: '/admin',
         artists: '/admin/artists',

@@ -13,6 +13,7 @@ import ManageUsers from "../pages/admin/ManageUsers";
 import ProfilePage from "../pages/ProfilePage";    
 import NowPlaying from "../pages/NowPlaying";
 import SearchPage from "../pages/SearchPage";
+import CreatePlaylist from "../pages/CreatePlaylist";
 import { Sidebar } from "../pages/Sidebar"; // 2. הוספתי ייבוא לסרגל
 
 // 3. יצרתי קומפוננטת Layout חדשה שמכילה את הסרגל
@@ -42,6 +43,10 @@ const Router = () => {
                 {
                     path: Paths.profile,
                     element: <AuthGuard><ProfilePage /></AuthGuard>
+                },
+                {
+                    path: Paths.createPlaylist,
+                    element: <AuthGuard><CreatePlaylist /></AuthGuard>
                 },
                 {
                     path: Paths.nowPlaying + '/:id',
