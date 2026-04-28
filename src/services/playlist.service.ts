@@ -50,8 +50,7 @@ export const getAllPlaylists = async (): Promise<Playlist[]> => {
  * שליפת פלייליסטים של משתמש ספציפי
  */
 export const getPlaylistsByUserId = async (userId: number): Promise<Playlist[]> => {
-    const response = await axiosInstance.get(`Playlist/user/${userId}`);
-    return response.data;
+const response = await axiosInstance.get<Playlist[]>(`Playlist/user/${userId}`);    return response.data;
 };
 
 /**

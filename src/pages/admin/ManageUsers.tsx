@@ -2,47 +2,73 @@
 import { useEffect, useState } from "react"
 import { getAllUsers, deleteUser } from "../../services/user.service"
 import type { AdminUser } from "../../types/user.types"
+import { useAuthContext } from "../../auth/useAuthContext";
 
 const ManageUsers = () => {
+    const { isInitialized, user } = useAuthContext();
     const [users, setUsers] = useState<AdminUser[]>([])
     const [loading, setLoading] = useState(true)
 
     const fetchUsers = async () => {
         try {
-            setLoading(true)
-            const data = await getAllUsers()
-            setUsers(data)
+            console.log("3. API call started"); // האם אנחנו מגיעים לפה?
+            setLoading(true);
+            const data = await getAllUsers();
+            console.log("4. API response received:", data); // מה חזר מהשרת?
+            setUsers(data);
         } catch (error) {
-            console.error("Failed to fetch users", error)
+            console.error("Failed to fetch users", error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
     useEffect(() => {
-        fetchUsers()
-    }, [])
+        console.log("1. useEffect triggered. isInitialized:", isInitialized);
+        if (isInitialized) {
+            console.log("2. Auth ready. Role:", user?.role); // מהו ה-role המדויק?
+            if (user?.role === "Admin") {
+                fetchUsers();
+            } else {
+                setLoading(false); // מפסיק טעינה אם המשתמש לא מורשה
+            }
+        }
+    }, [isInitialized, user]); // התלות באלו חייבת להיות כאן
+
+    // ... שאר הקוד
 
     const handleDelete = async (id: number) => {
         if (!confirm('האם את בטוחה שברצונך למחוק משתמש זה?')) return
-        await deleteUser(id)
-        fetchUsers() // רענון הרשימה
+        try {
+            await deleteUser(id)
+            fetchUsers() 
+        } catch (error) {
+            alert("מחיקה נכשלה");
+        }
     }
 
     const toImageSrc = (arrImage: string) => {
         return `data:image/jpeg;base64,${arrImage}`
     }
 
-    if (loading) return <div>טוען משתמשים...</div>
+    // אם עדיין לא אתחלנו את ה-Auth, נציג טעינה כללית
+    if (!isInitialized || (loading && users.length === 0)) {
+        return <div style={{ padding: '20px' }}>טוען נתוני מערכת...</div>
+    }
+
+    // הגנה למקרה שמישהו שאינו אדמין הגיע לכאן
+    if (user?.role !== "Admin") {
+        return <div style={{ padding: '20px', color: 'red' }}>אין לך הרשאות לצפות בדף זה.</div>
+    }
 
     return (
         <div style={{ padding: '20px' }}>
-            <h2>ניהול לקוחות רשומים</h2>
+            <h2>ניהול לקוחות רשומים ({users.length})</h2>
             
             <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
                 <thead>
                     <tr style={{ borderBottom: '2px solid #ccc', textAlign: 'right' }}>
-                        <th>תמונה</th>
+                        <th style={{ padding: '10px' }}>תמונה</th>
                         <th>שם משתמש</th>
                         <th>אימייל</th>
                         <th>סטטוס</th>
@@ -50,13 +76,13 @@ const ManageUsers = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map(user => (
-                        <tr key={user.id} style={{ borderBottom: '1px solid #eee' }}>
-                            <td>
-                                {user.arrProfile ? (
+                    {users.map(userItem => (
+                        <tr key={userItem.id} style={{ borderBottom: '1px solid #eee' }}>
+                            <td style={{ padding: '10px' }}>
+                                {userItem.arrProfile ? (
                                     <img 
-                                        src={toImageSrc(user.arrProfile)} 
-                                        alt={user.userName} 
+                                        src={toImageSrc(userItem.arrProfile)} 
+                                        alt={userItem.userName} 
                                         style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} 
                                     />
                                 ) : (
@@ -65,17 +91,17 @@ const ManageUsers = () => {
                                     </div>
                                 )}
                             </td>
-                            <td>{user.userName}</td>
-                            <td>{user.email}</td>
+                            <td>{userItem.userName}</td>
+                            <td>{userItem.email}</td>
                             <td>
-                                {user.isAdmin ? 
-                                    <span style={{ color: 'gold', fontWeight: 'bold' }}>⭐ מנהל</span> : 
+                                {userItem.isAdmin ? 
+                                    <span style={{ color: '#d4af37', fontWeight: 'bold' }}>⭐ מנהל</span> : 
                                     'לקוח'
                                 }
                             </td>
                             <td>
                                 <button 
-                                    onClick={() => handleDelete(user.id)}
+                                    onClick={() => handleDelete(userItem.id)}
                                     style={{ backgroundColor: '#ff4d4d', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer', borderRadius: '4px' }}
                                 >
                                     🗑️ מחק

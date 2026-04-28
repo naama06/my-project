@@ -1,19 +1,14 @@
-import axiosInstance from "../services/axios"
-
-//שומרת את ה-token ב-localStorage וגם מוסיפה אותו לכל קריאת axios אוטומטית
+// auth.utils.ts
 export const setSession = (token: string) => {
-    localStorage.setItem('token', token)
-    axiosInstance.defaults.headers.common.Authorization = `Bearer ${token}`
-}
+    localStorage.setItem('token', token);
+};
 
-// קוראת את ה-token מה-localStorage ומחזירה אותו
 export const getSession = () => {
-    return localStorage.getItem('token')
-}
+    return localStorage.getItem('token');
+};
 
-// מסירה את ה-token מה-localStorage ומנקה את כותרת Authorization של axios
 export const removeSession = () => {
-    localStorage.removeItem('token')
-    axiosInstance.defaults.headers.common.Authorization = ''
-    window.location.href = '/login'
-}
+    localStorage.removeItem('token');
+    // במקום redirect אלים, עדיף לתת ל-AuthContext לטפל בזה
+    // אם בכל זאת חייב: window.location.href = '/login';
+};

@@ -1,86 +1,84 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../auth/AuthContext';
-import { getPlaylistsByUserId } from '../services/playlist.service';
-import type { Playlist } from '../types/playlist.types';
-import '../style/LibraryPage.css';
+import { useEffect, useState } from "react";
+import { useAuthContext } from "../auth/useAuthContext";
+import { getPlaylistsByUserId } from "../services/playlist.service";
+import type { Playlist } from "../types/playlist.types";
+
 
 const LibraryPage = () => {
-    const navigate = useNavigate();
-    const auth = useContext(AuthContext);
-    const user = auth?.user;
-    
+    const { user, isInitialized } = useAuthContext();
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+
+    // פונקציית עזר לתמונות בדיוק כמו ב-HomePage
+    const getImageSrc = (arrImage: string | null) => {
+        if (!arrImage) return 'https://via.placeholder.com/150?text=No+Playlist+Cover';
+        return `data:image/jpeg;base64,${arrImage}`;
+    };
 
     useEffect(() => {
-        const fetchPlaylists = async () => {
-            try {
-                setLoading(true);
-                
-                if (user) {
-                    const myId = Number(user.userId || (user as any).id);
-                    const data = await getPlaylistsByUserId(myId);
-                    setPlaylists(data);
+        const fetchLibraryData = async () => {
+            // שימוש בבדיקה זהה ל-HomePage
+            if (user?.userId) {
+                try {
+                    setLoading(true);
+                    const userIdNum = Number(user.userId);
+                    
+                    // קריאת הנתונים
+                    const data = await getPlaylistsByUserId(userIdNum);
+                    setPlaylists(data || []);
+                } catch (error) {
+                    console.error("שגיאה בטעינת הפלייליסטים בספרייה", error);
+                } finally {
+                    setLoading(false);
                 }
-            } catch (err) {
-                console.error("שגיאה בטעינת פלייליסטים:", err);
-                setError(true);
-            } finally {
+            } else if (isInitialized) {
+                // אם סיים להיטען ואין יוזר
                 setLoading(false);
             }
         };
 
-        fetchPlaylists();
-    }, [user]);
+        fetchLibraryData();
+    }, [user?.userId, isInitialized]); // מאזין לשינוי ב-ID בדיוק כמו ב-HomePage
 
-    if (loading) return <div className="loading-state">טוען ספריה...</div>;
-    if (error) return <div className="error-state">שגיאה בטעינת הנתונים מהשרת.</div>;
+    if (!isInitialized || loading) {
+        return <div className="loading-state">טוען את הספרייה שלך...</div>;
+    }
 
     return (
-        <div className="library-page">
-            <header className="library-header">
-                <h1>הספרייה שלי</h1>
-                {/* הכפתור עבר לכאן כדי שתמיד יהיה זמין */}
-                <button 
-                    className="create-playlist-btn" 
-                    onClick={() => navigate('/create-playlist')}
-                >
-                    + צור פלייליסט חדש
-                </button>
+        <div id="home-page-container"> {/* שימוש באותו קונטיינר לעיצוב אחיד */}
+            <header className="home-header">
+                <h1 className="greeting-text">הספרייה של {user?.userName}</h1>
+                <p className="subtitle-text">כל הפלייליסטים שיצרת במקום אחד</p>
             </header>
 
-            <div className="library-content">
-                {playlists.length > 0 ? (
-                    <div className="playlists-grid">
-                        {playlists.map((playlist) => (
-                            <div 
-                                key={playlist.id} 
-                                className="playlist-card" 
-                                onClick={() => navigate(`/playlist/${playlist.id}`)}
-                            >
-                                <div className="card-image">
-                                    {playlist.arrCover ? (
-                                        <img src={`data:image/jpeg;base64,${playlist.arrCover}`} alt={playlist.playlistName} />
-                                    ) : (
-                                        <div className="placeholder-icon">🎵</div>
-                                    )}
+            <section className="home-section">
+                <div className="section-title-wrapper">
+                    <h2>הפלייליסטים שלי</h2>
+                </div>
+                
+                {playlists.length === 0 ? (
+                    <div className="no-data-message" style={{ textAlign: 'center', padding: '40px' }}>
+                        <p>עדיין לא יצרת פלייליסטים.</p>
+                    </div>
+                ) : (
+                    <div className="cards-grid">
+                        {playlists.map(playlist => (
+                            <div key={playlist.id} className="song-card-figma">
+                                <div className="image-wrapper">
+                                    <img 
+                                        src={getImageSrc(playlist.arrCover)} 
+                                        alt={playlist.playlistName} 
+                                    />
                                 </div>
                                 <div className="card-info">
-                                    <h3>{playlist.playlistName}</h3>
-                                    <p>{playlist.songsCount || 0} שירים</p>
+                                    <h4 className="song-name">{playlist.playlistName}</h4>
+                                    <p className="artist-name">{playlist.songsCount || 0} שירים</p>
                                 </div>
                             </div>
                         ))}
                     </div>
-                ) : (
-                    <div className="empty-library-message">
-                        <p>עדיין אין לך פלייליסטים משלך.</p>
-                        <p className="hint">לחצי על הכפתור למעלה כדי להתחיל!</p>
-                    </div>
                 )}
-            </div>
+            </section>
         </div>
     );
 };

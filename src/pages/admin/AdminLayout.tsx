@@ -7,6 +7,7 @@ const AdminLayout = () => {
                 <Link to={Paths.admin.artists}>אמנים</Link>
                 <Link to={Paths.admin.songs}>שירים</Link>
                 <Link to={Paths.admin.users}>משתמשים</Link>
+                <Link to={Paths.admin.playlists}>פלייליסטים</Link>
             </nav>
             <Outlet />
         </div>

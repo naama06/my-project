@@ -14,5 +14,6 @@ export const Paths = {
         artists: '/admin/artists',
         songs: '/admin/songs',
         users: '/admin/users',
+        playlists: '/admin/playlists',
     }
 }
