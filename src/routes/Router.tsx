@@ -15,6 +15,7 @@ import NowPlaying from "../pages/NowPlaying";
 import SearchPage from "../pages/SearchPage";
 import CreatePlaylist from "../pages/CreatePlaylist";
 import { Sidebar } from "../pages/Sidebar"; // 2. הוספתי ייבוא לסרגל
+import LibraryPage from "../pages/LibraryPage";
 
 // 3. יצרתי קומפוננטת Layout חדשה שמכילה את הסרגל
 const MainLayout = () => (
@@ -47,6 +48,10 @@ const Router = () => {
                 {
                     path: Paths.createPlaylist,
                     element: <AuthGuard><CreatePlaylist /></AuthGuard>
+                },
+                {
+                    path: Paths.library,
+                    element: <AuthGuard><LibraryPage /></AuthGuard>
                 },
                 {
                     path: Paths.nowPlaying + '/:id',

@@ -5,8 +5,9 @@ export interface Playlist {
     playlistName: string;
     playlistCoverPath: string | null;
     userName: string;
+    userId: number; // 👈 הוספנו את זה בשביל הסינון בספרייה
     songsCount: number;
-    arrCover: string | null; // זה ה-byte[] שמגיע מהשרת כ-Base64
+    arrCover: string | null; 
 }
 
 export interface PlaylistDetails extends Playlist {

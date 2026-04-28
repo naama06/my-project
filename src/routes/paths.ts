@@ -7,6 +7,8 @@ export const Paths = {
     nowPlaying: '/now-playing',
     search: '/search',
     createPlaylist: '/create-playlist',
+    library: '/library',
+    // playlistDetails: (id: number) => `/playlist/${id}`,
     admin: {
         root: '/admin',
         artists: '/admin/artists',

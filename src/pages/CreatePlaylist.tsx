@@ -30,23 +30,27 @@ const CreatePlaylist = () => {
     };
 
     const handleInitPlaylist = async () => {
-        if (!playlistName.trim()) return alert("חובה לתת שם לפלייליסט");
-        
-        // בדיקה שהמשתמש מחובר ויש לו ID
-        if (!user || !user.userId) {
-            return alert("שגיאה: לא נמצא מזהה משתמש. נסה להתחבר מחדש.");
-        }
+    if (!playlistName.trim()) return alert("חובה לתת שם לפלייליסט");
+    
+    // שליפת ה-ID הנכון: אם אין userId (משתמש), ננסה לקחת id (מנהל)
+    const currentUserId = user?.userId || (user as any)?.id;
 
-        try {
-            // המרת userId מ-string ל-number עבור ה-Service
-            const userIdNum = Number(user.userId);
-            const result = await createPlaylist(playlistName, userIdNum, selectedFile || undefined);
-            setCreatedPlaylist(result);
-        } catch (err) {
-            console.error("שגיאה ביצירת פלייליסט:", err);
-            alert("יצירת הפלייליסט נכשלה.");
-        }
-    };
+    if (!currentUserId) {
+        return alert("שגיאה: לא נמצא מזהה משתמש. נסה להתחבר מחדש.");
+    }
+
+    try {
+        const userIdNum = Number(currentUserId);
+        
+        // עכשיו ה-userIdNum יהיה המזהה האמיתי של מי שמחובר כרגע
+        const result = await createPlaylist(playlistName, userIdNum, selectedFile || undefined);
+        setCreatedPlaylist(result);
+        alert("הפלייליסט נוצר בהצלחה!");
+    } catch (err) {
+        console.error("שגיאה ביצירת פלייליסט:", err);
+        alert("יצירת הפלייליסט נכשלה.");
+    }
+};
 
     const handleSearch = async (val: string) => {
         setSearchQuery(val);

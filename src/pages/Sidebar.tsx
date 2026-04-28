@@ -57,10 +57,10 @@ export const Sidebar = () => {
     <span>חיפוש</span>
 </div>
 
-        <div className="nav-item">
-          <Library size={22} />
-          <span>הספרייה שלך</span>
-        </div>
+        <div className={`nav-item ${isActive(Paths.library) ? 'active' : ''}`} onClick={() => navigate(Paths.library)}>
+    <Library size={22} />
+    <span>הספרייה שלי</span>
+  </div>
 
         <div className="nav-separator"></div>
 
