@@ -3,6 +3,7 @@ export type Song = {
     songName: string;
     genere: string;
     artistName: string;
+    duration: string;
     arrImage: string | null;
     artistId: number; // נצטרך את זה לעריכה
 }

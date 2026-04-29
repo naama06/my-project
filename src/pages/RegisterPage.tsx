@@ -115,11 +115,11 @@ const RegisterPage = () => {
                             <div className="step-content">
                                 <h1>Personal Info</h1>
                                 <p>Tell us a bit about yourself</p>
-                                <div className="input-group-label">Full Name</div>
+                                {/* <div className="input-group-label">Full Name</div>
                                 <div className="input-box">
                                     <UserIcon className="input-icon" size={18} />
                                     <input type="text" name="fullName" placeholder="John Doe" value={formData.fullName} onChange={handleChange} required />
-                                </div>
+                                </div> */}
                                 <div className="input-group-label">Username</div>
                                 <div className="input-box">
                                     <UserIcon className="input-icon" size={18} />

@@ -25,11 +25,17 @@ const ManageUsers = () => {
 
     useEffect(() => {
         console.log("1. useEffect triggered. isInitialized:", isInitialized);
+        console.log("1.1. User data:", user);
+        
         if (isInitialized) {
             console.log("2. Auth ready. Role:", user?.role); // מהו ה-role המדויק?
+            console.log("2.1. Is Admin check:", user?.role === "Admin");
+            
             if (user?.role === "Admin") {
+                console.log("3. User is admin, fetching users...");
                 fetchUsers();
             } else {
+                console.log("3.1. User is not admin or role is undefined. Role:", user?.role);
                 setLoading(false); // מפסיק טעינה אם המשתמש לא מורשה
             }
         }

@@ -1,13 +1,30 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../auth/useAuthContext";
-import { getPlaylistsByUserId } from "../services/playlist.service";
+import { getPlaylistsByUserId, deletePlaylist } from '../services/playlist.service';
 import type { Playlist } from "../types/playlist.types";
 
 
 const LibraryPage = () => {
+    const navigate = useNavigate();
     const { user, isInitialized } = useAuthContext();
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const handleDeletePlaylist = async (playlistId: number, playlistName: string) => {
+        if (!confirm(`האם את בטוחה שברצונך למחוק את הפלייליסט "${playlistName}"?`)) {
+            return;
+        }
+        
+        try {
+            await deletePlaylist(playlistId);
+            // רענון הרשימה לאחר מחיקה
+            setPlaylists(prev => prev.filter(p => p.id !== playlistId));
+        } catch (error) {
+            console.error("שגיאה במחיקת פלייליסט:", error);
+            alert("מחיקת הפלייליסט נכשלה");
+        }
+    };
 
     // פונקציית עזר לתמונות בדיוק כמו ב-HomePage
     const getImageSrc = (arrImage: string | null) => {
@@ -73,6 +90,20 @@ const LibraryPage = () => {
                                 <div className="card-info">
                                     <h4 className="song-name">{playlist.playlistName}</h4>
                                     <p className="artist-name">{playlist.songsCount || 0} שירים</p>
+                                </div>
+                                <div className="card-actions">
+                                    <button 
+                                        onClick={() => navigate(`/playlist/${playlist.id}`)}
+                                        className="play-button"
+                                    >
+                                        ▶️ פתח
+                                    </button>
+                                    <button 
+                                        onClick={() => handleDeletePlaylist(playlist.id, playlist.playlistName)}
+                                        className="delete-button"
+                                    >
+                                        🗑️ מחק
+                                    </button>
                                 </div>
                             </div>
                         ))}

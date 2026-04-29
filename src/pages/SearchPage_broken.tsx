@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { searchAll } from '../services/search.service';
 import { getSongsByGenre } from '../services/song.service'; // שימוש בפונקציה שהוספנו
-import { Search as SearchIcon, X, Music, Users, ChevronRight } from 'lucide-react';
+import { getPlaylistsByUserId } from '../services/playlist.service';
+import { addSongToPlaylist } from '../services/playlist.service';
+import { useAuthContext } from '../auth/useAuthContext';
+import { useLocation } from 'react-router-dom';
+import { Search as SearchIcon, X, Music, Users, ChevronRight, Plus, Check } from 'lucide-react';
 import '../style/SearchPage.css';
 
 // הסדר תואם בדיוק ל-Enum: POP, ROCK, FOLK, COUNTRY, JEWISH
@@ -14,9 +18,16 @@ const genres = [
 ];
 
 const SearchPage = () => {
+    const { user } = useAuthContext();
+    const location = useLocation();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any>(null);
     const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+    const [userPlaylists, setUserPlaylists] = useState<any[]>([]);
+    const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+    const [selectedSong, setSelectedSong] = useState<any>(null);
+    const [addedSongs, setAddedSongs] = useState<Set<number>>(new Set());
+    const [selectedPlaylists, setSelectedPlaylists] = useState<Set<number>>(new Set());
 
     // חיפוש טקסט חופשי - מתעלם מהז'אנר הנבחר
     const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,10 +59,67 @@ const SearchPage = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchUserPlaylists = async () => {
+            if (user?.userId) {
+                try {
+                    const playlists = await getPlaylistsByUserId(Number(user.userId));
+                    setUserPlaylists(playlists);
+                } catch (error) {
+                    console.error("שגיאה בטעינת פלייליסטים:", error);
+                }
+            }
+        };
+        fetchUserPlaylists();
+    }, [user]);
+
     const resetView = () => {
         setQuery('');
         setResults(null);
         setSelectedGenre(null);
+    };
+
+    const handleAddSongToPlaylist = (song: any) => {
+        setSelectedSong(song);
+        setSelectedPlaylists(new Set()); // איפוס בחירות קודמות
+        setShowPlaylistModal(true);
+    };
+
+    // טיפול בבחירת/ביטול בחירת פלייליסט
+    const handlePlaylistToggle = (playlistId: number) => {
+        setSelectedPlaylists(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(playlistId)) {
+                newSet.delete(playlistId);
+            } else {
+                newSet.add(playlistId);
+            }
+            return newSet;
+        });
+    };
+
+    // הוספת שיר לכל הפלייליסטים שנבחרו
+    const handleAddToSelectedPlaylists = async () => {
+        if (!selectedSong || selectedPlaylists.size === 0) return;
+        
+        try {
+            const promises = Array.from(selectedPlaylists).map(playlistId => 
+                addSongToPlaylist(playlistId, selectedSong.id)
+            );
+            
+            await Promise.all(promises);
+            
+            setAddedSongs(prev => new Set(prev).add(selectedSong.id));
+            setShowPlaylistModal(false);
+            setSelectedSong(null);
+            setSelectedPlaylists(new Set());
+            
+            const playlistCount = selectedPlaylists.size;
+            alert(`השיר "${selectedSong.songName}" נוסף בהצלחה ל-${playlistCount} פלייליסטים!`);
+        } catch (error) {
+            console.error("שגיאה בהוספת שיר לפלייליסטים:", error);
+            alert("הוספת השיר לפלייליסטים נכשלה");
+        }
     };
 
     return (
@@ -107,6 +175,13 @@ const SearchPage = () => {
                                                 <div className="title">{song.songName}</div>
                                                 <div className="artist">{song.artistName}</div>
                                             </div>
+                                            <button 
+                                                className={`add-to-playlist-btn ${addedSongs.has(song.id) ? 'added' : ''}`}
+                                                onClick={() => handleAddSongToPlaylist(song)}
+                                                disabled={addedSongs.has(song.id)}
+                                            >
+                                                {addedSongs.has(song.id) ? <Check size={16} /> : <Plus size={16} />}
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
@@ -143,16 +218,43 @@ const SearchPage = () => {
                                     className={`genre-card ${genre.color}`}
                                     onClick={() => handleGenreClick(genre.id, genre.name)}
                                 >
-                                    <img src={genre.image} alt={genre.name} />
-                                    <h3>{genre.name}</h3>
+                                    <div className="playlist-checkbox">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={selectedPlaylists.has(playlist.id)}
+                                            onChange={() => handlePlaylistToggle(playlist.id)}
+                                        />
+                                    </div>
+                                    <img 
+                                        src={playlist.arrCover ? `data:image/jpeg;base64,${playlist.arrCover}` : 'https://via.placeholder.com/50'} 
+                                        alt={playlist.playlistName} 
+                                    />
+                                    <div className="playlist-info">
+                                        <h4>{playlist.playlistName}</h4>
+                                        <p>{playlist.songsCount || 0} שירים</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
+                        {userPlaylists.length === 0 && (
+                            <p className="no-playlists">אין לך פלייליסטים. צור פלייליסט חדש קודם.</p>
+                        )}
+                        {userPlaylists.length > 0 && (
+                            <div className="modal-actions">
+                                <button 
+                                    className="add-to-selected-btn"
+                                    onClick={handleAddToSelectedPlaylists}
+                                    disabled={selectedPlaylists.size === 0}
+                                >
+                                    הוסף ל-{selectedPlaylists.size} פלייליסטים
+                                </button>
+                            </div>
+                        )}
                     </div>
-                )}
-            </main>
-        </div>
-    );
-};
+                </div>
+            </div>
+        )}
+    </div>
+);
 
 export default SearchPage;

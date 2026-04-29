@@ -8,7 +8,7 @@ export const Paths = {
     search: '/search',
     createPlaylist: '/create-playlist',
     library: '/library',
-    // playlistDetails: (id: number) => `/playlist/${id}`,
+    playlistDetails: (id: number) => `/playlist/${id}`,
     admin: {
         root: '/admin',
         artists: '/admin/artists',

@@ -14,6 +14,7 @@ import ProfilePage from "../pages/ProfilePage";
 import NowPlaying from "../pages/NowPlaying";
 import SearchPage from "../pages/SearchPage";
 import CreatePlaylist from "../pages/CreatePlaylist";
+import PlaylistDetailsPage from "../pages/PlaylistDetailsPage";
 import { Sidebar } from "../pages/Sidebar"; // 2. הוספתי ייבוא לסרגל
 import LibraryPage from "../pages/LibraryPage";
 import ManagePlaylists from "../pages/admin/ManagePlaylists";
@@ -61,6 +62,10 @@ const Router = () => {
                 {
                     path: Paths.search,
                     element: <AuthGuard><SearchPage /></AuthGuard>
+                },
+                {
+                    path: '/playlist/:id',
+                    element: <PlaylistDetailsPage />
                 },
             ]
         },
