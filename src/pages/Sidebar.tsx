@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../auth/useAuthContext';
 import { getUserById } from "../services/user.service";
 import { Paths } from '../routes/paths';
-import { Home, Search, Library, PlusSquare, User as UserIcon } from 'lucide-react';
+// 1. הוספתי כאן את האייקון ShieldCheck (או Settings לבחירתך)
+import { Home, Search, Library, PlusSquare, User as UserIcon, ShieldCheck } from 'lucide-react'; 
 import type { AdminUser } from "../types/user.types";
 import '../style/Sidebar.css';
 
@@ -51,34 +52,42 @@ export const Sidebar = () => {
           <span>דף הבית</span>
         </div>
         
-        <div className={`nav-item ${isActive(Paths.search) ? 'active' : ''}`} onClick={() => navigate(Paths.search)}
->
-    <Search size={20} /> {/* וודאי שיש לך כאן את האייקון המתאים */}
-    <span>חיפוש</span>
-</div>
+        <div className={`nav-item ${isActive(Paths.search) ? 'active' : ''}`} onClick={() => navigate(Paths.search)}>
+          <Search size={20} />
+          <span>חיפוש</span>
+        </div>
 
         <div className={`nav-item ${isActive(Paths.library) ? 'active' : ''}`} onClick={() => navigate(Paths.library)}>
-    <Library size={22} />
-    <span>הספרייה שלי</span>
-  </div>
+          <Library size={22} />
+          <span>הספרייה שלי</span>
+        </div>
 
         <div className="nav-separator"></div>
 
-        <div 
-  className={`nav-item ${isActive(Paths.createPlaylist) ? 'active' : ''}`} 
-  onClick={() => navigate(Paths.createPlaylist)}
->
-  <PlusSquare size={22} />
-  <span>צור פלייליסט</span>
-</div>
+        <div className={`nav-item ${isActive(Paths.createPlaylist) ? 'active' : ''}`} onClick={() => navigate(Paths.createPlaylist)}>
+          <PlusSquare size={22} />
+          <span>צור פלייליסט</span>
+        </div>
         
-        <div 
-          className={`nav-item ${isActive(Paths.profile) ? 'active' : ''}`} 
-          onClick={() => navigate(Paths.profile)}
-        >
+        <div className={`nav-item ${isActive(Paths.profile) ? 'active' : ''}`} onClick={() => navigate(Paths.profile)}>
           <UserIcon size={22} />
           <span>פרופיל</span>
         </div>
+
+        {/* --- 2. תוספת: כפתור ניהול מערכת למנהלים בלבד --- */}
+        {user?.role === "Admin" && (
+          <>
+            <div className="nav-separator"></div> {/* קו מפריד נוסף בשביל הסדר */}
+            <div 
+              className={`nav-item admin-item ${isActive(Paths.admin.root) ? 'active' : ''}`} 
+              onClick={() => navigate(Paths.admin.root)}
+              style={{ color: '#00CEEA' }} // צבע שונה כדי להבליט את כפתור המנהל
+            >
+              <ShieldCheck size={22} />
+              <span>ניהול מערכת</span>
+            </div>
+          </>
+        )}
       </nav>
 
       {/* אזור המשתמש למטה */}
