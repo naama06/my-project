@@ -1,13 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+// ייבוא של Redux
+import { useSelector } from "react-redux"; 
+import { type RootState } from "../store/store";
+// ייבוא ה-Context המקורי (נשמר לצורך ה-ID ב-useEffect)
 import { useAuthContext } from "../auth/useAuthContext";
 import { getRecommendedSongs, getFavoriteArtists } from "../services/song.service";
 import type { Song } from "../types/song.types";
 import { TrendingUp, Sparkles, Flame } from 'lucide-react';
 import "../style/HomePage.css"; 
 
+
 const HomePage = () => {
+    // שליפת המשתמש מה-Redux Store
+    const reduxUser = useSelector((state: RootState) => state.auth.user);
+    
+    // שימוש ב-Context רק לצורך ה-ID כדי להריץ את ה-API
     const { user } = useAuthContext();
+    
     const navigate = useNavigate();
     const [recommendedSongs, setRecommendedSongs] = useState<Song[]>([]);
     const [favoriteArtists, setFavoriteArtists] = useState<any[]>([]);
@@ -27,6 +37,7 @@ const HomePage = () => {
 
     useEffect(() => {
         const fetchHomeData = async () => {
+            // משתמשים ב-ID מה-Context כדי למשוך נתונים
             if (user?.userId) {
                 try {
                     setLoading(true);
@@ -53,9 +64,11 @@ const HomePage = () => {
 
     return (
         <div id="home-page-container">
-            {/* Header Section - ללא כפתור התנתקות */}
+            {/* Header Section - כאן אנחנו משתמשים במידע מ-Redux */}
             <header className="home-header">
-                <h1 className="greeting-text">{getGreeting()}, {user?.userName}!</h1>
+                <h1 className="greeting-text">
+                    {getGreeting()}, {reduxUser?.userName || 'אורח'}!
+                </h1>
                 <p className="subtitle-text">מוכנה להיכנס לקצב עם האמנים האהובים עליך?</p>
             </header>
 
@@ -74,7 +87,6 @@ const HomePage = () => {
                     </div>
                     <h2 className="banner-title">Summer Vibes 2026</h2>
                     <p className="banner-description">הטרקים הכי חמים ששורפים את הפלייליסט שלך עכשיו</p>
-                    
                 </div>
             </div>
 
