@@ -3,7 +3,7 @@ import { useAuthContext } from "../../auth/useAuthContext";
 import { getAllPlaylists, getPlaylistById, deletePlaylist } from "../../services/playlist.service";
 import type { Playlist, PlaylistDetails } from "../../types/playlist.types";
 import { Trash2, ChevronDown, ChevronUp, Music, User, Clock } from "lucide-react";
-import "../../style/HomePage.css"; 
+import "../../style/HomePage.css";
 
 const ManagePlaylistsPage = () => {
     const { user, isInitialized } = useAuthContext();
@@ -48,6 +48,24 @@ const ManagePlaylistsPage = () => {
         }
     };
 
+    // פונקציית המחיקה החדשה
+    const handleDelete = async (e: React.MouseEvent, id: number, name: string) => {
+        e.stopPropagation(); // מונע מהאקורדיון להיפתח/להיסגר בלחיצה על המחיקה
+        
+        if (window.confirm(`האם את בטוחה שברצונך למחוק את הפלייליסט "${name}"?`)) {
+            try {
+                await deletePlaylist(id);
+                // עדכון הסטייט המקומי כדי שהפלייליסט ייעלם מיד מהרשימה בלי לרענן דף
+                setPlaylists(prev => prev.filter(p => p.id !== id));
+                if (expandedId === id) setExpandedId(null);
+                alert("הפלייליסט נמחק בהצלחה");
+            } catch (error) {
+                console.error("שגיאה במחיקה", error);
+                alert("אירעה שגיאה בעת ניסיון המחיקה");
+            }
+        }
+    };
+
     const getImageSrc = (img: string | null) => img ? `data:image/jpeg;base64,${img}` : 'https://via.placeholder.com/50';
 
     if (!isInitialized || loading) return <div className="loading-state">טוען ניהול...</div>;
@@ -78,15 +96,25 @@ const ManagePlaylistsPage = () => {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                                 {expandedId === p.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                 <button 
-                                    onClick={(e) => { e.stopPropagation(); /* מחיקה */ }}
-                                    style={{ background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer' }}
+                                    onClick={(e) => handleDelete(e, p.id, p.playlistName)} // קריאה לפונקציית המחיקה
+                                    style={{ 
+                                        background: 'none', 
+                                        border: 'none', 
+                                        color: '#ff4d4d', 
+                                        cursor: 'pointer',
+                                        padding: '5px',
+                                        borderRadius: '50%',
+                                        transition: 'background 0.2s'
+                                    }}
+                                    onMouseOver={(e) => (e.currentTarget.style.background = '#fff0f0')}
+                                    onMouseOut={(e) => (e.currentTarget.style.background = 'none')}
                                 >
                                     <Trash2 size={18} />
                                 </button>
                             </div>
                         </div>
 
-                        {/* החלק הנסתר שנפתח (Accordion) */}
+                        {/* החלק הנסתר (Accordion) */}
                         {expandedId === p.id && (
                             <div style={{ padding: '20px', borderTop: '1px solid #f0f0f0', background: '#fafafa' }}>
                                 {loadingDetails ? (
@@ -100,7 +128,7 @@ const ManagePlaylistsPage = () => {
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#444' }}>
                                                 <Clock size={18} />
-                                                <strong>נוצר בתאריך:</strong> {new Date().toLocaleDateString() /* או שדה מה-DB */}
+                                                <strong>נוצר בתאריך:</strong> {new Date().toLocaleDateString()}
                                             </div>
                                         </div>
 
