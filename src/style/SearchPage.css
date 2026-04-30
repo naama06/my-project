@@ -327,3 +327,104 @@
     font-size: 0.9rem;
     user-select: none; /* מונע בחירת טקסט בטעות בלחיצה מהירה */
 }
+/* כפתור הפלוס בתוך השיר */
+.add-to-playlist-btn-circle {
+    margin-right: auto; /* דוחף לצד שמאל (ב-RTL) */
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.add-to-playlist-btn-circle:hover {
+    transform: scale(1.1);
+    border-color: #00CEEA;
+    background: rgba(0, 206, 234, 0.1);
+}
+
+/* עיצוב אופציית פלייליסט כשהיא נבחרת */
+.playlist-option.is-added {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.check-icon {
+    color: #28a745;
+    margin-right: auto; /* דוחף לשמאל */
+}
+
+/* שיפור למודאל */
+.playlist-modal {
+    scrollbar-width: thin;
+    scrollbar-color: #00CEEA #1a1a2e;
+}
+/* כפתור הפלוס בשורה של השיר */
+.add-to-playlist-btn-circle {
+    margin-right: auto;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.add-to-playlist-btn-circle:hover {
+    background: rgba(0, 206, 234, 0.1);
+    border-color: #00CEEA;
+    transform: scale(1.1);
+}
+
+/* אפשרות פלייליסט שנבחרה */
+.playlist-option.is-added {
+    border: 1px solid #28a745;
+    background: rgba(40, 167, 69, 0.15);
+}
+
+.check-icon {
+    color: #28a745;
+    margin-right: auto;
+}
+
+/* פוטר המודאל וכפתור סיום */
+.modal-footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+}
+
+.confirm-selection-btn {
+    background-color: #00CEEA;
+    color: #000;
+    border: none;
+    padding: 10px 35px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.confirm-selection-btn:hover {
+    transform: scale(1.05);
+    background-color: #00e5ff;
+}
+
+.loading-state {
+    text-align: center;
+    padding: 20px;
+    color: #00CEEA;
+}
