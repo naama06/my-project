@@ -9,6 +9,4 @@ export const getSession = () => {
 
 export const removeSession = () => {
     localStorage.removeItem('token');
-    // במקום redirect אלים, עדיף לתת ל-AuthContext לטפל בזה
-    // אם בכל זאת חייב: window.location.href = '/login';
 };

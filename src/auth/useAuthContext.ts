@@ -6,9 +6,3 @@ export const useAuthContext = () => {
     if (!context) throw new Error('useAuthContext must be used within AuthProvider')
     return context
 }
-//מה זה עושה:
-// במקום לכתוב בכל קומפוננטה:
-// typescriptconst context = useContext(AuthContext)
-// if (!context) throw new Error(...)
-// פשוט כותבים:
-// typescriptconst { user, isAuthorized } = useAuthContext()

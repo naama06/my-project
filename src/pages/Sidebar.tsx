@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../auth/useAuthContext';
 import { getUserById } from "../services/user.service";
 import { Paths } from '../routes/paths';
-// 1. הוספתי כאן את האייקון ShieldCheck (או Settings לבחירתך)
 import { Home, Search, Library, PlusSquare, User as UserIcon, ShieldCheck } from 'lucide-react'; 
 import type { AdminUser } from "../types/user.types";
 import '../style/Sidebar.css';
@@ -77,11 +76,11 @@ export const Sidebar = () => {
         {/* --- 2. תוספת: כפתור ניהול מערכת למנהלים בלבד --- */}
         {user?.role === "Admin" && (
           <>
-            <div className="nav-separator"></div> {/* קו מפריד נוסף בשביל הסדר */}
+            <div className="nav-separator"></div> 
             <div 
               className={`nav-item admin-item ${isActive(Paths.admin.root) ? 'active' : ''}`} 
               onClick={() => navigate(Paths.admin.root)}
-              style={{ color: '#00CEEA' }} // צבע שונה כדי להבליט את כפתור המנהל
+              style={{ color: '#00CEEA' }} 
             >
               <ShieldCheck size={22} />
               <span>ניהול מערכת</span>

@@ -77,7 +77,7 @@ const SearchPage = () => {
         try {
             if (isSongInPlaylist) {
                 await removeSongFromPlaylist(playlist.id, selectedSong.id);
-                // עדכון UI מקומי
+                // עדכון 
                 setUserPlaylists(prev => prev.map(p => 
                     p.id === playlist.id 
                     ? { ...p, songs: p.songs.filter(s => s.id !== selectedSong.id) } 
@@ -85,7 +85,7 @@ const SearchPage = () => {
                 ));
             } else {
                 await addSongToPlaylist(playlist.id, selectedSong.id);
-                // עדכון UI מקומי
+                // עדכון 
                 setUserPlaylists(prev => prev.map(p => 
                     p.id === playlist.id 
                     ? { ...p, songs: [...p.songs, selectedSong] } 

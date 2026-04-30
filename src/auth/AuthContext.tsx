@@ -3,8 +3,8 @@ import type { User, AdminUser } from "../types/user.types"
 import { getSession, removeSession, setSession } from "./auth.utils"
 import { jwtDecode } from "jwt-decode"
 import { getUserById } from "../services/user.service"
-import { useDispatch } from "react-redux" // הוספנו
-import { setUser as setReduxUser } from "../store/authSlice" // הוספנו
+import { useDispatch } from "react-redux" 
+import { setUser as setReduxUser } from "../store/authSlice" 
 
 type AuthStateType = {
     user: User | null
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const setUser = (user: User | null) => {
         setAuthState(prev => ({ ...prev, user }));
-        dispatch(setReduxUser(user)); // כאן הקסם: מעדכנים גם את ה-Context וגם את Redux!
+        dispatch(setReduxUser(user)); 
     }
 
     const fetchUser = async () => {
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     role: freshUserData.isAdmin ? "Admin" : "User"
                 };
 
-                setUser(userToSet); // זה מעדכן את שניהם
+                setUser(userToSet); 
             } catch (error) {
                 console.error("Failed to fetch fresh user data", error);
                 removeSession(); 

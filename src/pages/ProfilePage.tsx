@@ -80,7 +80,7 @@ const ProfilePage = () => {
     return (
         <div className="new-profile-layout">
             
-            {/* Header Section */}
+          
             <div className="profile-hero">
                 <div className="avatar-halo-container large">
                     {userData?.arrProfile ? (
@@ -101,7 +101,7 @@ const ProfilePage = () => {
                    <p className="sub-email">{userData?.email || 'naamawe06@gmail.com'}</p>
                 </div>
 
-                {/* כפתור ערוך פרופיל - שולט על הצגת הטופס */}
+              
                 <button 
                     className={`gradient-edit-btn ${isEditing ? 'active' : ''}`}
                     onClick={() => setIsEditing(!isEditing)}
@@ -111,7 +111,7 @@ const ProfilePage = () => {
                 </button>
             </div>
 
-            {/* Form Section - מותנה ב-isEditing */}
+
             {isEditing && (
                 <div className="profile-form-section animate-fade-in">
                     <form onSubmit={handleSubmit} className="new-form-grid">

@@ -8,7 +8,6 @@ import { Plus, Check, Image as ImageIcon, Music } from 'lucide-react';
 import '../style/CreatePlaylist.css'; 
 
 const CreatePlaylist = () => {
-    // משיכת נתוני המשתמש מהקונטקסט שלך
     const auth = useContext(AuthContext);
     const user = auth?.user;
 
